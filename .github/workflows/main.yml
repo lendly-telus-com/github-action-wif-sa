@@ -26,7 +26,7 @@ jobs:
           create_credentials_file: true
           activate_credentials_file: true
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
           access_token_lifetime: '1800s'
 
       - name: 'Set up Cloud SDK'
