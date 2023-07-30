@@ -22,18 +22,9 @@ jobs:
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
         with:
-          token_format: 'access_token'
           create_credentials_file: true
-          activate_credentials_file: true
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
+          workload_identity_provider: 'projects/541105984323/locations/global/workloadIdentityPools/lc-wif-pool/providers/lc-wif-provider'
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
-          access_token_lifetime: '1800s'
-
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
-
-      - name: set crdential_file
-        run: gcloud auth login --cred-file=${{steps.auth.outputs.credentials_file_path}}
 
       # List the instances in the project
       - name: List Instances
