@@ -9,7 +9,7 @@ env:
 
 jobs:
   setup-prepare-list:
-    name: WIF Test
+    name: WIF Demo
     runs-on: ubuntu-latest
 
     permissions:
