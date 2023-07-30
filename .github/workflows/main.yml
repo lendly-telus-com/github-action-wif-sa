@@ -6,10 +6,12 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
+  SA: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
 jobs:
   setup-prepare-list:
-    name: WIF Demo
+    name: WIF Test
     runs-on: ubuntu-latest
 
     permissions:
@@ -26,11 +28,19 @@ jobs:
         uses: 'google-github-actions/auth@v1'
         with:
           token_format: 'access_token'
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          activate_credentials_file: true
+          workload_identity_provider: ${{ env.PROVIDER }}
+          service_account: ${{ env.SA }}
           access_token_lifetime: '1800s'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - name: set crdential_file
+        run: gcloud auth login --cred-file=${{steps.auth.outputs.credentials_file_path}}
 
       # List the instances in the project
       - name: List Instances
         run: |-
-          gcloud compute instances list --project $PROJECT_ID
+          gcloud compute instances list --project ${{ env.PROJECT_ID }}
