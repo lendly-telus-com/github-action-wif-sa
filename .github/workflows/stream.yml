@@ -6,7 +6,7 @@ on:
 
 jobs:
   setup-prepare-list:
-    name: WIF Test
+    name: DORA-POC
     runs-on: ubuntu-latest
 
     permissions:
@@ -17,21 +17,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # Configure Workload Identity Federation and generate an access token.
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v1"
-        with:
-          create_credentials_file: true
-          workload_identity_provider: "projects/541105984323/locations/global/workloadIdentityPools/dora-pool/providers/dora-provider"
-          service_account: "dora-wif@off-net-dev.iam.gserviceaccount.com"
-
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v0.3.0
         with:
-          workload_identity_pool: "projects/541105984323/locations/global/workloadIdentityPools/dora-pool/providers/dora-provider"
-          workload_identity_principa"l: "dora-wif@off-net-dev.iam.gserviceaccount.com"
-          project_id: "off-net-dev"
+          workload_identity_pool: ${{secrets.WORKLOAD_IDENTITY_PROVIDER_ID}}
+          workload_identity_principal: ${{secrets.SERVICE_ACCOUNT}}
+          project_id: ${{secrets.GCP_PROJECT_ID}}
 
       # List the instances in the project
       - name: List Instances
