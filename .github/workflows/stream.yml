@@ -23,8 +23,8 @@ jobs:
         uses: "google-github-actions/auth@v1"
         with:
           create_credentials_file: true
-          workload_identity_provider: "projects/541105984323/locations/global/workloadIdentityPools/lc-wif-pool/providers/lc-wif-provider"
-          service_account: "lendly-wif@off-net-dev.iam.gserviceaccount.com"
+          workload_identity_provider: "projects/541105984323/locations/global/workloadIdentityPools/dora-pool/providers/dora-provider"
+          service_account: "dora-wif@off-net-dev.iam.gserviceaccount.com"
 
       # List the instances in the project
       - name: List Instances

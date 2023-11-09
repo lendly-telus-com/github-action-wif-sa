@@ -18,16 +18,16 @@
 
 ## Add provider
 
-`gcloud iam workload-identity-pools providers create-oidc lc-wif-provider \
---location="global" --workload-identity-pool="lc-wif-pool"  \
+`gcloud iam workload-identity-pools providers create-oidc dora-provider \
+--location="global" --workload-identity-pool="dora-pool"  \
 --issuer-uri="https://token.actions.githubusercontent.com" \
 --attribute-mapping="attribute.actor=assertion.actor,google.subject=assertion.sub,attribute.repository=assertion.repository" \
 --project off-net-dev`
 
 ## Create SA
 
-`gcloud iam service-accounts create lendly-wif \
---display-name="Service account used by WIF POC" \
+`gcloud iam service-accounts create dora-wif \
+--display-name="service account used by dora-poc" \
 --project off-net-dev`
 
 ## Add Role
@@ -37,19 +37,19 @@
 --role="roles/compute.viewer"`
 
 `gcloud projects add-iam-policy-binding off-net-dev \
---member='serviceAccount:lendly-wif@off-net-dev.iam.gserviceaccount.com' \
+--member='serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com' \
 --role="roles/iam.workloadIdentityUser"`
 
 ## Bind Sa
 
-`gcloud iam service-accounts add-iam-policy-binding lendly-wif@off-net-dev.iam.gserviceaccount.com \
+`gcloud iam service-accounts add-iam-policy-binding dora-wif@off-net-dev.iam.gserviceaccount.com \
 --project=off-net-dev \
 --role="roles/iam.workloadIdentityUser" \
---member="principalSet://iam.googleapis.com/projects/541105984323/locations/global/workloadIdentityPools/lc-wif-pool/*/attribute.repository/lendly-telus-com/github-action-wif-sa"`
+--member="principalSet://iam.googleapis.com/projects/541105984323/locations/global/workloadIdentityPools/dora-pool/*/attribute.repository/TeamDevEx/hello-deploy-demo"`
 
-`gcloud iam service-accounts add-iam-policy-binding lendly-wif@off-net-dev.iam.gserviceaccount.com \
+`gcloud iam service-accounts add-iam-policy-binding dora-wif@off-net-dev.iam.gserviceaccount.com \
     --role=roles/iam.workloadIdentityUser \
-    --member="principal://iam.googleapis.com/projects/541105984323/locations/global/workloadIdentityPools/lc-wif-pool/subject/google.subject"`
+    --member="principal://iam.googleapis.com/projects/541105984323/locations/global/workloadIdentityPools/dora-pool/subject/google.subject"`
 
 ## add to workflow yaml
 
