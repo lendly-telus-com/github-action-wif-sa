@@ -23,10 +23,10 @@ jobs:
         uses: "google-github-actions/auth@v1"
         with:
           create_credentials_file: true
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+          workload_identity_provider: "projects/541105984323/locations/global/workloadIdentityPools/lc-wif-pool/providers/lc-wif-provider"
+          service_account: "lendly-wif@off-net-dev.iam.gserviceaccount.com"
 
       # List the instances in the project
       - name: List Instances
         run: |-
-          gsutil ls -p ${{ secrets.GCP_PROJECT_ID }}
+          gsutil ls -p off-net-dev
