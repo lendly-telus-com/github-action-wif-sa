@@ -26,7 +26,14 @@ jobs:
           workload_identity_provider: "projects/541105984323/locations/global/workloadIdentityPools/dora-pool/providers/dora-provider"
           service_account: "dora-wif@off-net-dev.iam.gserviceaccount.com"
 
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.3.0
+        with:
+          workload_identity_pool: "projects/541105984323/locations/global/workloadIdentityPools/dora-pool/providers/dora-provider"
+          workload_identity_principa"l: "dora-wif@off-net-dev.iam.gserviceaccount.com"
+          project_id: "off-net-dev"
+
       # List the instances in the project
       - name: List Instances
         run: |-
-          gsutil ls -p off-net-dev
+          gsutil ls
