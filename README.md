@@ -45,7 +45,7 @@
 `gcloud iam service-accounts add-iam-policy-binding dora-wif@off-net-dev.iam.gserviceaccount.com \
 --project=off-net-dev \
 --role="roles/iam.workloadIdentityUser" \
---member="principalSet://iam.googleapis.com/projects/541105984323/locations/global/workloadIdentityPools/dora-pool/*/attribute.repository/TeamDevEx/hello-deploy-demo"`
+--member="principalSet://iam.googleapis.com/projects/541105984323/locations/global/workloadIdentityPools/dora-pool/attribute.repository/lendly-telus-com/github-action-wif-sa"`
 
 `gcloud iam service-accounts add-iam-policy-binding dora-wif@off-net-dev.iam.gserviceaccount.com \
     --role=roles/iam.workloadIdentityUser \
