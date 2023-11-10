@@ -6,7 +6,7 @@ on:
 
 jobs:
   setup-prepare-list:
-    name: DORA-POC
+    name: DORA-PUSH-EVENT-POC
     runs-on: ubuntu-latest
 
     permissions:
@@ -33,7 +33,8 @@ jobs:
           workload_identity_principal: ${{secrets.SERVICE_ACCOUNT}}
           project_id: ${{secrets.GCP_PROJECT_ID}}
 
-      # List the instances in the project
-      - name: List Instances
-        run: |-
-          gsutil ls
+      - name: Generate and Upload GitHub Context to GCS
+        run: |
+          commit_hash=$(git rev-parse HEAD)
+          echo '${{ toJson(github) }}' > "github-context-${commit_hash}.json"
+          gsutil cp "github-context-${commit_hash}.json" gs://dora-github-push-event/
