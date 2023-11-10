@@ -1,26 +1,27 @@
-name: Push Metadata to GCS
+name: Issue Metadata to GCS
 
 on:
   issues:
     types:
       - opened
+
 jobs:
   setup-prepare-list:
     name: DORA-Issue-Open
     runs-on: ubuntu-latest
 
     permissions:
-      contents: "read"
-      id-token: "write"
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       # Configure Workload Identity Federation and generate an access token.
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v1"
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
         with:
           create_credentials_file: true
           workload_identity_provider: ${{secrets.WIF_PROVIDER}}
@@ -35,6 +36,6 @@ jobs:
 
       - name: Generate and Upload GitHub Context to GCS
         run: |
-          commit_hash=$(git rev-parse HEAD)
-          echo '${{ toJson(github) }}' > "github-issue-${commit_hash}.json"
-          gsutil cp "github-context-${commit_hash}.json" gs://dora-github-issue-event/
+          issue_title=$(jq -r '.issue.title' $GITHUB_EVENT_PATH)
+          echo '${{ toJson(github) }}' > "github-issue-${issue_title}.json"
+          gsutil cp "github-issue-${issue_title}.json" gs://dora-github-issue-event/
