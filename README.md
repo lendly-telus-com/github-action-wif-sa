@@ -60,3 +60,11 @@
           create_credentials_file: true
           workload_identity_provider: 'projects/541105984323/locations/global/workloadIdentityPools/lc-wif-pool/providers/lc-wif-provider'
           service_account: ${{ secrets.SERVICE_ACCOUNT }}`
+
+## required auth in cloud run
+
+gcloud functions add-invoker-policy-binding function-gcs \
+--region=northamerica-northeast1 \
+ --member='serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com'
+
+ref : https://cloud.google.com/functions/docs/securing/authenticating?&_ga=2.68306385.-1127616448.1696975733#gcloud_1
