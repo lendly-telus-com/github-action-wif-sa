@@ -1,4 +1,4 @@
-name: Issue Metadata to GCS
+name: Open Issue Metadata to GCS
 
 on:
   issues:
