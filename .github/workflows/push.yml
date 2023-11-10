@@ -1,4 +1,4 @@
-name: Metadata to GCS
+name: Push Metadata to GCS
 
 on:
   push:
