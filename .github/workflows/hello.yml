@@ -1,0 +1,39 @@
+name: Sink Poc
+
+on:
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: "off-net-dev"
+  GAR_LOCATION: "northamerica-northeast1"
+  REGION: "northamerica-northeast1"
+  APP: "lendly-demo"
+
+jobs:
+  build-and-push:
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: "Google authorizations"
+        id: "auth"
+        uses: "google-github-actions/auth@v1"
+        with:
+          create_credentials_file: true
+          workload_identity_provider: "${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}"
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
+      - name: Get Git Commit Hash
+        id: git_commit
+        run: echo ::set-output name=commit::$(git rev-parse --short=7 HEAD)
+
+      - name: "Build and push containers"
+        run: |-
+          docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.APP }}/${{ env.APP }}:${{ steps.git_commit.outputs.commit }}" . 
+          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.APP }}/${{ env.APP }}:${{ steps.git_commit.outputs.commit }}"
