@@ -50,5 +50,5 @@ jobs:
     steps:
       - name: Deploy
         run: |
-          echo I am deploying to staging env
-          echo ${{secrets.Proj}}
+          echo I am deploying to production env
+          exit 1
