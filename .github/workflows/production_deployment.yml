@@ -1,4 +1,4 @@
-name: Production Deployment contecxt to GCS
+name: Listening to Deployment
 
 on:
   workflow_run:
@@ -35,12 +35,9 @@ jobs:
           workload_identity_principal: ${{secrets.SERVICE_ACCOUNT}}
           project_id: ${{secrets.GCP_PROJECT_ID}}
 
-      - name: Echo deployment
+      - name: Get JSON content from GitHub deployments URL and Upload to GCS
         run: |
-          echo '${{ toJson(github.github.event.repository.deployments_url) }}'
-
-      - name: Generate and Upload Production Metadata to GCS
-        run: |
+          json_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.repository.deployments_url }}")
           commit_hash=$(git rev-parse HEAD)
-          echo '${{ toJson(github.event.repository.deployments_url) }}' > "production-deployment-${commit_hash}.json"
+          echo "$json_content" > "production-deployment-${commit_hash}.json"
           gsutil cp "production-deployment-${commit_hash}.json" gs://dora-github-production-deployment/
