@@ -38,6 +38,10 @@ jobs:
       - name: Generate and Upload Production Metadata to GCS
         if: github.event.deployment.environment == 'production'
         run: |
-          commit_hash=$(git rev-parse HEAD)     
-          echo '${{ toJson(github) }}' > "production-deployment-${commit_hash}.json"     
+          commit_hash=$(git rev-parse HEAD)
+          workflow_run_number=$(echo "${{ github.event.workflow_run.url }}" | awk -F'/' '{print $NF}')
+          branch_name=$(echo "${{ github.event.deployment.ref }}" | awk -F'/' '{print $NF}')
+
+          echo '{ "github": '"$(echo "${{ toJson(github) }}" | jq --arg commit_hash "${commit_hash}" --arg workflow_run_number "${workflow_run_number}" --arg branch_name "${branch_name}" '. + { "commit_hash": $commit_hash, "workflow_run_number": $workflow_run_number, "branch_name": $branch_name }')" }' > "production-deployment-${commit_hash}.json"
+
           gsutil cp "production-deployment-${commit_hash}.json" gs://dora-github-production-deployment/
