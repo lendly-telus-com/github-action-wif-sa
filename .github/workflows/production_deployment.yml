@@ -35,6 +35,9 @@ jobs:
           workload_identity_principal: ${{secrets.SERVICE_ACCOUNT}}
           project_id: ${{secrets.GCP_PROJECT_ID}}
 
+      - name: Debug GitHub Event
+        run: echo "${{ toJson(github.event) }}"
+
       - name: Generate and Upload Production Metadata to GCS
         if: github.event.deployment.environment == 'production'
         run: |
