@@ -34,8 +34,6 @@ jobs:
       - name: Generate and Upload Production Metadata to GCS
         if: github.event.deployment.environment == 'production'
         run: |
-          # Extract production metadata and save it to a file
-          echo "${{ toJson(github.event.deployment.payload.meta_data) }}" > "production-metadata.json"
-
-          # Upload the production metadata to GCS
-          gsutil cp "production-metadata.json" gs://dora-github-production-deployment/
+          commit_hash=$(git rev-parse HEAD)     
+          echo '${{ toJson(github) }}' > "production-deployment-${commit_hash}.json"     
+          gsutil cp "production-deployment-${commit_hash}.json" gs://dora-github-production-deployment/
