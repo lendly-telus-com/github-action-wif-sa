@@ -40,22 +40,13 @@ jobs:
           json_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.repository.deployments_url }}")
           commit_hash=$(git rev-parse HEAD)          
           filtered_json_array=$(echo "$json_content" | jq --arg commit_hash "$commit_hash" '[.[] | select(.sha == $commit_hash)]')
-
           if [ -n "$filtered_json_array" ]; then            
             for i in $(seq 0 $(echo "$filtered_json_array" | jq length - 1)); do              
-              object=$(echo "$filtered_json_array" | jq ".[$i]")
-              echo ${object}
-              
-              if [ "$(echo "$object" | jq -r '.environment')" == "Production" ]; then
-                echo ${object}                
-                production_status=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$(echo "$object" | jq -r '.statuses_url')")             
-                
-                object=$(echo "$object" | jq --argjson production_status "$production_status" '. + {production_status: $production_status}')
-              fi
-              
+              object=$(echo "$filtered_json_array" | jq ".[$i]")           
+              deployment_status=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$(echo "$object" | jq -r '.statuses_url')")         
+              object=$(echo "$object" | jq --argjson production_status "$production_status" '. + {production_status: $production_status}')
               filtered_json_array=$(echo "$filtered_json_array" | jq ".[$i] = $object")
             done
-            
             echo "$filtered_json_array" > "production-deployment-${commit_hash}.json"            
             gsutil cp "production-deployment-${commit_hash}.json" gs://dora-github-production-deployment/
           else
