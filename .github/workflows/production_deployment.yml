@@ -1,0 +1,44 @@
+name: Production Deployment metadata to GCS
+
+on: deployment
+
+jobs:
+  setup-prepare-list:
+    name: DORA-Issue-Closed
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Configure Workload Identity Federation and generate an access token.
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          create_credentials_file: true
+          workload_identity_provider: ${{secrets.WIF_PROVIDER}}
+          service_account: ${{secrets.SERVICE_ACCOUNT}}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.3.0
+        with:
+          workload_identity_pool: ${{secrets.WORKLOAD_IDENTITY_PROVIDER_ID}}
+          workload_identity_principal: ${{secrets.SERVICE_ACCOUNT}}
+          project_id: ${{secrets.GCP_PROJECT_ID}}
+
+      - name: Generate and Upload GitHub Context to GCS
+        if: github.event.deployment.environment == 'production'
+        run: |
+          issue_title=$(jq -r '.issue.title' $GITHUB_EVENT_PATH)
+          deployment_status=$(jq -r '.deployment_status.state' $GITHUB_EVENT_PATH)
+
+          # Add status to the GitHub context JSON
+          echo '{ "github": '"$(echo "${{ toJson(github) }}" | jq --arg status "${deployment_status}" '. + { "deployment_status": $status }')" }' > "github-issue-${issue_title}.json"
+
+          # Upload the modified JSON to GCS
+          gsutil cp "github-issue-${issue_title}.json" gs://dora-github-production-deployment/
