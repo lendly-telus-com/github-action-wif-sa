@@ -51,4 +51,4 @@ jobs:
       - name: Deploy
         run: |
           echo I am deploying to production env
-          exit 1
+          ##exit 1  # uncomment if wanted to fail
