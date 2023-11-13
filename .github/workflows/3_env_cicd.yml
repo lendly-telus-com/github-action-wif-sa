@@ -36,11 +36,6 @@ jobs:
     environment:
       name: Staging
       url: "http://dev.test_demoApp.com"
-
-    permissions:
-      contents: "read"
-      id-token: "write"
-
     steps:
       - name: Deploy
         run: echo I am deploying to staging env
@@ -52,7 +47,9 @@ jobs:
     environment:
       name: Production
       url: "http://www.demoApp.com"
-
+    permissions:
+      contents: "read"
+      id-token: "write"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
