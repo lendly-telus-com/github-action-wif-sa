@@ -1,6 +1,10 @@
 name: Production Deployment metadata to GCS
 
-on: deployment
+on:
+  workflow_run:
+    workflows: ["CI-CD with Environments"]
+    types:
+      - completed
 
 jobs:
   setup-prepare-list:
