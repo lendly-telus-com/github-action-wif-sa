@@ -49,4 +49,6 @@ jobs:
       url: "http://www.demoApp.com"
     steps:
       - name: Deploy
-        run: echo I am deploying to staging env
+        run: |
+          echo I am deploying to staging env
+          echo ${{secrets.Proj}}
