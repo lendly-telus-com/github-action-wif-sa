@@ -1,69 +1,46 @@
-# name: Production Deployment metadata to GCS
+name: Production Deployment contecxt to GCS
 
-# on:
-#   workflow_run:
-#     workflows: ["CI-CD with Environments"]
-#     types:
-#       - completed
+on:
+  workflow_run:
+    workflows: ["CI-CD with Environments"]
+    types:
+      - completed
 
-# jobs:
-#   setup-prepare-list:
-#     name: Environment Checking
-#     runs-on: ubuntu-latest
+jobs:
+  get-production-context:
+    name: Environment Checking
+    runs-on: ubuntu-latest
 
-#     permissions:
-#       contents: read
-#       id-token: write
+    permissions:
+      contents: read
+      id-token: write
 
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-#       # Configure Workload Identity Federation and generate an access token.
-#       - id: auth
-#         name: Authenticate to Google Cloud
-#         uses: google-github-actions/auth@v1
-#         with:
-#           create_credentials_file: true
-#           workload_identity_provider: ${{secrets.WIF_PROVIDER}}
-#           service_account: ${{secrets.SERVICE_ACCOUNT}}
+      # Configure Workload Identity Federation and generate an access token.
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          create_credentials_file: true
+          workload_identity_provider: ${{secrets.WIF_PROVIDER}}
+          service_account: ${{secrets.SERVICE_ACCOUNT}}
 
-#       - name: Set up Google Cloud SDK
-#         uses: google-github-actions/setup-gcloud@v0.3.0
-#         with:
-#           workload_identity_pool: ${{secrets.WORKLOAD_IDENTITY_PROVIDER_ID}}
-#           workload_identity_principal: ${{secrets.SERVICE_ACCOUNT}}
-#           project_id: ${{secrets.GCP_PROJECT_ID}}
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.3.0
+        with:
+          workload_identity_pool: ${{secrets.WORKLOAD_IDENTITY_PROVIDER_ID}}
+          workload_identity_principal: ${{secrets.SERVICE_ACCOUNT}}
+          project_id: ${{secrets.GCP_PROJECT_ID}}
 
-#       - name: Generate and Upload Production Metadata to GCS
-#         if: github.event.deployment.environment == 'production' && github.event_name == 'workflow_run'
-#         run: |
-#           commit_hash=$(git rev-parse HEAD)
-#           echo '${{ toJson(github) }}' > "production-deployment-${commit_hash}.json"
-#           gsutil cp "production-deployment-${commit_hash}.json" gs://dora-github-production-deployment/
+      - name: Echo deployment
+        run: |
+          echo '${{ toJson(github.event) }}'
 
-#   production-approval:
-#     name: Production Approval
-#     runs-on: ubuntu-latest
-#     if: github.event.deployment.environment == 'production' && github.event_name == 'workflow_run'
-#     steps:
-#       - name: Wait for Manual Approval
-#         uses: actions/github-script@v5
-#         with:
-#           script: |
-#             // Fetch the deployment status
-#             const deployment = await github.repos.getDeployment({
-#               owner: context.repo.owner,
-#               repo: context.repo.repo,
-#               deployment_id: context.payload.workflow_run.deployment.id
-#             });
-
-#             // Check if the deployment is approved
-#             if (deployment.data.state === 'success') {
-#               console.log('Production deployment is approved.');
-#               process.exit(0);  // Continue with the workflow
-#             } else {
-#               console.log('Production deployment is not approved yet. Waiting...');
-#               process.exit(78);  // Exit with a neutral status code to pause the workflow
-#             }
-#           octokit-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate and Upload Production Metadata to GCS
+        run: |
+          commit_hash=$(git rev-parse HEAD)
+          echo '${{ toJson(github.event.deployment) }}' > "production-deployment-${commit_hash}.json"
+          gsutil cp "production-deployment-${commit_hash}.json" gs://dora-github-production-deployment/
