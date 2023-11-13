@@ -31,13 +31,11 @@ jobs:
           workload_identity_principal: ${{secrets.SERVICE_ACCOUNT}}
           project_id: ${{secrets.GCP_PROJECT_ID}}
 
-      - name: Generate and Upload GitHub Context to GCS
+      - name: Generate and Upload Production Metadata to GCS
         if: github.event.deployment.environment == 'production'
         run: |
-          deployment_status=$(jq -r '.deployment_status.state' $GITHUB_EVENT_PATH)
+          # Extract production metadata and save it to a file
+          echo "${{ toJson(github.event.deployment.payload.meta_data) }}" > "production-metadata.json"
 
-          # Add status to the GitHub context JSON
-          echo '{ "github": '"$(echo "${{ toJson(github) }}" | jq --arg status "${deployment_status}" '. + { "deployment_status": $status }')", "metadata": '"$(echo "${{ toJson(github.event.deployment.payload.meta_data) }}" | jq -c -M '.' | sed ':a;N;$!ba;s/\n/ /g')"' }' > "github-production-metadata.json"
-
-          # Upload the modified JSON to GCS
-          gsutil cp "github-production-metadata.json" gs://dora-github-production-deployment/
+          # Upload the production metadata to GCS
+          gsutil cp "production-metadata.json" gs://dora-github-production-deployment/
