@@ -36,6 +36,11 @@ jobs:
     environment:
       name: Staging
       url: "http://dev.test_demoApp.com"
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+
     steps:
       - name: Deploy
         run: echo I am deploying to staging env
