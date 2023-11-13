@@ -48,6 +48,8 @@ jobs:
       name: Production
       url: "http://www.demoApp.com"
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
       - name: Send Context to GCS
         run: |
           commit_hash=$(git rev-parse HEAD)     
