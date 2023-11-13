@@ -35,16 +35,35 @@ jobs:
           workload_identity_principal: ${{secrets.SERVICE_ACCOUNT}}
           project_id: ${{secrets.GCP_PROJECT_ID}}
 
-      - name: Debug GitHub Event
-        run: cat .github/workflows/3_env_cicd.yml
+      - name: Generate and Upload Production Metadata to GCS
+        if: github.event.deployment.environment == 'production' && github.event_name == 'workflow_run'
+        run: |
+          commit_hash=$(git rev-parse HEAD)     
+          echo '${{ toJson(github) }}' > "production-deployment-${commit_hash}.json"     
+          gsutil cp "production-deployment-${commit_hash}.json" gs://dora-github-production-deployment/
 
-    #   - name: Generate and Upload Production Metadata to GCS
-    #     if: github.event.deployment.environment == 'production'
-    #     run: |
-    #       commit_hash=$(git rev-parse HEAD)
-    #       workflow_run_number=$(echo "${{ github.event.workflow_run.url }}" | awk -F'/' '{print $NF}')
-    #       branch_name=$(echo "${{ github.event.deployment.ref }}" | awk -F'/' '{print $NF}')
+  production-approval:
+    name: Production Approval
+    runs-on: ubuntu-latest
+    if: github.event.deployment.environment == 'production' && github.event_name == 'workflow_run'
+    steps:
+      - name: Wait for Manual Approval
+        uses: actions/github-script@v5
+        with:
+          script: |
+            // Fetch the deployment status
+            const deployment = await github.repos.getDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.workflow_run.deployment.id
+            });
 
-    #       echo '{ "github": '"$(echo "${{ toJson(github) }}" | jq --arg commit_hash "${commit_hash}" --arg workflow_run_number "${workflow_run_number}" --arg branch_name "${branch_name}" '. + { "commit_hash": $commit_hash, "workflow_run_number": $workflow_run_number, "branch_name": $branch_name }')" }' > "production-deployment-${commit_hash}.json"
-
-    #       gsutil cp "production-deployment-${commit_hash}.json" gs://dora-github-production-deployment/
+            // Check if the deployment is approved
+            if (deployment.data.state === 'success') {
+              console.log('Production deployment is approved.');
+              process.exit(0);  // Continue with the workflow
+            } else {
+              console.log('Production deployment is not approved yet. Waiting...');
+              process.exit(78);  // Exit with a neutral status code to pause the workflow
+            }
+          octokit-token: ${{ secrets.GITHUB_TOKEN }}
