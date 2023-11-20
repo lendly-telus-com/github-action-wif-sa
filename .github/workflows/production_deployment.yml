@@ -39,8 +39,8 @@ jobs:
         run: |
           commit_hash=$(git rev-parse HEAD)  
           json_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/telus/role-manager/deployments")
-          echo "$json_content" > "production-deployment-${commit_hash}.json" 
-          gsutil cp "production-deployment-${commit_hash}.json" gs://dora-github-production-deployment/
+          echo "$json_content" > "dora-${commit_hash}.json" 
+          gsutil cp "dora-${commit_hash}.json" gs://dora-github-production-deployment/
           # commit_hash=$(git rev-parse HEAD)          
           # filtered_json_array=$(echo "$json_content" | jq --arg commit_hash "$commit_hash" '[.[] | select(.sha == $commit_hash)]')
 
