@@ -37,7 +37,7 @@ jobs:
 
       - name: Get JSON content from GitHub deployments URL and Upload to GCS
         run: |
-          json_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.repository.deployments_url }}")
+          json_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/telus/role-manager/deployments")
           commit_hash=$(git rev-parse HEAD)          
           filtered_json_array=$(echo "$json_content" | jq --arg commit_hash "$commit_hash" '[.[] | select(.sha == $commit_hash)]')
 
