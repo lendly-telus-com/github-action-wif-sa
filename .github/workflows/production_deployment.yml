@@ -38,7 +38,7 @@ jobs:
       - name: Get JSON content from GitHub deployments URL and Upload to GCS
         run: |
           commit_hash=$(git rev-parse HEAD)  
-          json_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/telus/role-manager/deployments")
+          json_content=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/lendly-telus-com/github-action-wif-sa/deployments")
           echo "$json_content" > "dora-${commit_hash}.json" 
           gsutil cp "dora-${commit_hash}.json" gs://dora-github-production-deployment/
           # commit_hash=$(git rev-parse HEAD)          
