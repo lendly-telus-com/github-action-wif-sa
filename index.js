@@ -1,14 +1,40 @@
-const express = require('express');
-const app = express();
+const express = require("express");
+const { BigQuery } = require("@google-cloud/bigquery");
+const { Storage } = require("@google-cloud/storage");
 
-app.get('/hello', async (req, res) => {
+const bigquery = new BigQuery();
+const storage = new Storage();
+
+const app = express();
+const port = 8080;
+
+app.use(express.json());
+
+app.post("/cloudEvent", async (req, res) => {
+  const timestamp = new Date().toISOString();
+  const event = req.body;
+
+  const file = storage.bucket("dora-github-push-event").file(event.name);
+  const [content] = await file.download();
+
+  const jsonData = JSON.parse(content.toString());
+
+  const payload = {
+    ingestion_time: timestamp,
+    data: JSON.stringify(jsonData),
+  };
+
   try {
-    return res.json({ message: 'Hello Pogs ang cute cute mo po!!!' });
+    await bigquery.dataset(`dora`).table(`batch_events`).insert([payload]);
+
+    console.log("PAYLOAD WAS INGESTED SUCCESSFULLY");
+    res.status(200).send("Payload ingested successfully");
   } catch (err) {
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("SOMETHING WENT WRONG:", err);
+    res.status(500).send("Internal Server Error");
   }
 });
 
-app.listen(8080, () => {
-  console.log('Server is running on port 8080');
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
