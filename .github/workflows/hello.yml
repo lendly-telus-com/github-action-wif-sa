@@ -26,7 +26,7 @@ jobs:
         uses: "google-github-actions/auth@v1"
         with:
           create_credentials_file: true
-          workload_identity_provider: "${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}"
+          workload_identity_provider: "${{ secrets.WIF_PROVIDER }}"
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
 
       - name: Get Git Commit Hash
