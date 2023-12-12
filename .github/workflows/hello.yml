@@ -41,7 +41,15 @@ jobs:
         id: git_commit
         run: echo ::set-output name=commit::$(git rev-parse --short=7 HEAD)
 
-      - name: "Build and push containers"
-        run: |-
-          docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.APP }}/${{ env.APP }}:${{ steps.git_commit.outputs.commit }}" .
-          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.APP }}/${{ env.APP }}:${{ steps.git_commit.outputs.commit }}"
+      - name: Build Docker image
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/bqwriter:${{ steps.git_commit.outputs.commit }} .
+
+      - name: Push Docker image to Container Registry
+        run: |
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/bqwriter:${{ steps.git_commit.outputs.commit }}
+
+    #   - name: "Build and push containers"
+    #     run: |-
+    #       docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.APP }}/${{ env.APP }}:${{ steps.git_commit.outputs.commit }}" .
+    #       docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.APP }}/${{ env.APP }}:${{ steps.git_commit.outputs.commit }}"
