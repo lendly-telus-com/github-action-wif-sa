@@ -1,0 +1,14 @@
+[
+  {
+    "name": "ingestion_time",
+    "mode": "REQUIRED",
+    "type": "TIMESTAMP",
+    "description": "Current timestamp when payload was ingested by whatever Api"
+  },
+  {
+    "name": "data",
+    "mode": "NULLABLE",
+    "type": "JSON",
+    "description": "Response body of whatever Api"
+  }
+]
