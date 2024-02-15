@@ -2,10 +2,16 @@ defaults:
   run:
     working-directory: "terraform"
 
-name: 4Keys Poc
+name: Terraform Poc
+
+# on:
+#   workflow_dispatch:
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
 
 env:
   PROJECT_ID: "off-net-dev"
