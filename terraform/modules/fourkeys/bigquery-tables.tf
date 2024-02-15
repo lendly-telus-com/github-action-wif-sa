@@ -9,7 +9,7 @@ resource "google_bigquery_table" "batch_events" {
   dataset_id          = google_bigquery_dataset.dataset.dataset_id
   table_id            = "batch_events"
   deletion_protection = false
-  schema              = file("schemas/batch-events.json")
+  schema              = (file("${path.module}/schemas/batch-events.json"))
 
   time_partitioning {
     type  = "DAY"
@@ -21,7 +21,7 @@ resource "google_bigquery_table" "batch_logs" {
   dataset_id          = google_bigquery_dataset.dataset.dataset_id
   table_id            = "batch_logs"
   deletion_protection = false
-  schema              = file("schemas/batch-logs.json")
+  schema              = file("${path.module}/schemas/batch-logs.json")
 
   time_partitioning {
     type  = "DAY"
