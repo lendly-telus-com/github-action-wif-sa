@@ -63,7 +63,6 @@ resource "google_cloud_run_service" "batch_events_bq_writer" {
         }
       }
       service_account_name = local.compute_engine_service_account
-     
     }
   
   }
@@ -75,7 +74,7 @@ resource "google_cloud_run_service" "batch_events_bq_writer" {
 
   autogenerate_revision_name = true
   depends_on = [
-    module.gcloud_build_event_handler
+    module.gcloud_build_batch_events_bq_writer
   ]
 
   lifecycle {
