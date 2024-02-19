@@ -4,7 +4,7 @@ data "archive_file" "events_bq_writer_source" {
   output_path = "/tmp/big-query-writer/events.zip"
 }
 
-module "gcloud_build_event_handler" {
+module "gcloud_build_batch_events_bq_writer" {
   source                 = "terraform-google-modules/gcloud/google"
   version                = "~> 2.0"
   create_cmd_entrypoint  = "gcloud"
@@ -32,7 +32,6 @@ resource "google_eventarc_trigger" "primary" {
             region = "northamerica-northeast1"
         }
     }
-   
 }
 
 resource "google_cloud_run_service" "batch_events_bq_writer" {
