@@ -87,11 +87,11 @@ resource "google_cloud_run_service" "batch_events_bq_writer" {
 }
 
 
-# resource "google_cloud_run_service_iam_binding" "event_handler_noauth" {
-#   location   = "northamerica-northeast1"
-#   project    = var.project_id
-#   service    = google_cloud_run_service.batch_events_bq_writer.name
-#   role       = "roles/run.invoker"
-#   members    = ["allUsers"]
-#   depends_on = [google_cloud_run_service.batch_events_bq_writer]
-# }
+resource "google_cloud_run_service_iam_binding" "event_handler_noauth" {
+  location   = "northamerica-northeast1"
+  project    = var.project_id
+  service    = google_cloud_run_service.batch_events_bq_writer.name
+  role       = "roles/run.invoker"
+  members    = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
+  depends_on = [google_cloud_run_service.batch_events_bq_writer]
+}
