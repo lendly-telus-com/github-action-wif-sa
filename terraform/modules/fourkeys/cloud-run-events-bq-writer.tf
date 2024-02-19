@@ -8,7 +8,7 @@ module "gcloud_build_event_handler" {
   source                 = "terraform-google-modules/gcloud/google"
   version                = "~> 2.0"
   create_cmd_entrypoint  = "gcloud"
-  create_cmd_body        = "builds submit ../events_bq_writer --tag=${local.events_bq_writer_container_url}:${data.archive_file.events_bq_writer_source.output_sha} --project=${var.project_id}"
+  create_cmd_body        = "builds submit ../big-query-writer/events --tag=${local.events_bq_writer_container_url}:${data.archive_file.events_bq_writer_source.output_sha} --project=${var.project_id}"
   destroy_cmd_entrypoint = "gcloud"
   destroy_cmd_body       = "container images delete ${local.events_bq_writer_container_url}:${data.archive_file.events_bq_writer_source.output_sha} --quiet"
 }
