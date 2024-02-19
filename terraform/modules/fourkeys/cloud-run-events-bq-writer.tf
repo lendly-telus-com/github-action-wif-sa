@@ -4,7 +4,7 @@ data "archive_file" "events_bq_writer_source" {
   output_path = "/tmp/big-query-writer/events.zip"
 }
 
-module "gcloud_build_batch_event_bq_writer" {
+module "gcloud_build_event_handler" {
   source                 = "terraform-google-modules/gcloud/google"
   version                = "~> 2.0"
   create_cmd_entrypoint  = "gcloud"
