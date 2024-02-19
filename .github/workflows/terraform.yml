@@ -10,11 +10,11 @@ on:
       - main
   pull_request:
 
-env:
-  PROJECT_ID: "off-net-dev"
-  GAR_LOCATION: "northamerica-northeast1"
-  REGION: "northamerica-northeast1"
-  APP: "lendly-demo"
+# env:
+#   PROJECT_ID: "off-net-dev"
+#   GAR_LOCATION: "northamerica-northeast1"
+#   REGION: "northamerica-northeast1"
+#   APP: "lendly-demo"
 
 jobs:
   terraform:
