@@ -1,6 +1,6 @@
 data "archive_file" "events_bq_writer_source" {
   type        = "zip"
-  source_dir  = "../../../big-query-writer/events"
+  source_dir  = "../../big-query-writer/events"
   output_path = "/tmp/big-query-writer/events.zip"
 }
 
@@ -8,7 +8,7 @@ module "gcloud_build_batch_events_bq_writer" {
   source                 = "terraform-google-modules/gcloud/google"
   version                = "~> 2.0"
   create_cmd_entrypoint  = "gcloud"
-  create_cmd_body        = "builds submit ../../../big-query-writer/events --tag=${local.events_bq_writer_container_url}:${data.archive_file.events_bq_writer_source.output_sha} --project=${var.project_id}"
+  create_cmd_body        = "builds submit ../../big-query-writer/events --tag=${local.events_bq_writer_container_url}:${data.archive_file.events_bq_writer_source.output_sha} --project=${var.project_id}"
   destroy_cmd_entrypoint = "gcloud"
   destroy_cmd_body       = "container images delete ${local.events_bq_writer_container_url}:${data.archive_file.events_bq_writer_source.output_sha} --quiet"
 }
