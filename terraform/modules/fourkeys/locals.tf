@@ -3,7 +3,8 @@ data "google_project" "project" {
 }
 
 locals {
-  compute_engine_service_account     = "${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+  #compute_engine_service_account     = "${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+  compute_engine_service_account     = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
   cloudbuild_service_account         = "${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
   event_handler_container_url        = format("gcr.io/%s/event-handler", var.project_id)
   organization_fetcher_container_url = format("gcr.io/%s/organization_fetcher", var.project_id)
