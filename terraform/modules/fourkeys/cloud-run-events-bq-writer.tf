@@ -26,6 +26,9 @@ resource "google_eventarc_trigger" "primary" {
         attribute = "type"
         value = "google.cloud.storage.object.v1.finalized"
     }
+
+    service_account = "dora-wif@off-net-dev.iam.gserviceaccount.com"
+    
     destination {
         cloud_run_service {
             service = google_cloud_run_service.batch_events_bq_writer.name
