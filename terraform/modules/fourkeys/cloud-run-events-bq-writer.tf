@@ -45,7 +45,7 @@ module "gcloud_build_batch_events_bq_writer" {
 # }
 
 resource "google_cloud_run_service" "batch_events_bq_writer" {
-  name     = "batch_events_bq_writer"
+  name     = "batch-events-bq-writer"
   project  = var.project_id
   location = "northamerica-northeast1"
 
