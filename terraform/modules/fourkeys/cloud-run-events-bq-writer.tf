@@ -68,7 +68,7 @@ resource "google_cloud_run_service" "batch_events_bq_writer" {
       containers {
         image = "${local.events_bq_writer_container_url}:${data.archive_file.events_bq_writer_source.output_sha}"
         env {
-          name  = "PROJECT_NAME"
+          name  = "project-name"
           value = var.project_id
         }
       }
