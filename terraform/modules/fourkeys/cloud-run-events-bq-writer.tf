@@ -30,6 +30,7 @@ resource "google_eventarc_trigger" "primary" {
         cloud_run_service {
             service = google_cloud_run_service.batch_events_bq_writer.name
             region = "northamerica-northeast1"
+            path = "/cloudEvent"
         }
     }
 }
