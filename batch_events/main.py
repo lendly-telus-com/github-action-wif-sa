@@ -34,7 +34,7 @@ def after_request(response):
         response.set_data(json.dumps(data))
 
     return response
-@app.route("/", methods=["POST"])
+@app.route("/cloudEvent", methods=["POST"])
 def cloud_event():    
     event = request.get_json()
     print(event['name'])
