@@ -9,4 +9,5 @@ locals {
   event_handler_container_url        = format("gcr.io/%s/event-handler", var.project_id)
   organization_fetcher_container_url = format("gcr.io/%s/organization_fetcher", var.project_id)
   events_bq_writer_container_url     = format("gcr.io/%s/batch_events", var.project_id)
+  gh_logs_bq_writer_container_url    = format("gcr.io/%s/batch_logs", var.project_id)
 }
