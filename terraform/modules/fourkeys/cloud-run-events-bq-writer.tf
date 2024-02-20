@@ -8,7 +8,7 @@ module "gcloud_build_batch_events_bq_writer" {
   source                 = "terraform-google-modules/gcloud/google"
   version                = "~> 2.0"
   create_cmd_entrypoint  = "gcloud"
-  create_cmd_body        = "builds submit --tag=${local.events_bq_writer_container_url}:${data.archive_file.events_bq_writer_source.output_sha} --project=${var.project_id} --no-source --gcs-log-dir=gs://tf-cloud-build-logs --config=path/to/cloudbuild.yaml"
+  create_cmd_body        = "builds submit --tag=${local.events_bq_writer_container_url}:${data.archive_file.events_bq_writer_source.output_sha} --project=${var.project_id} --config=path/to/cloudbuild.yaml --gcs-log-dir=gs://tf-cloud-build-logs"
   destroy_cmd_entrypoint = "gcloud"
   destroy_cmd_body       = "container images delete ${local.events_bq_writer_container_url}:${data.archive_file.events_bq_writer_source.output_sha} --quiet"
 }
