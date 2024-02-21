@@ -1,5 +1,4 @@
-resource "google_storage_transfer_job" "batch_events_transfer_job" {
-  name        = ""
+resource "google_storage_transfer_job" "batch_events_transfer_job" {  
   description = "This will transfer GitHub events in archive bucket every hour"
   project     = "${var.project_id}"
 
