@@ -1,6 +1,10 @@
-resource "google_storage_transfer_job" "batch_logs_transfer_job" {  
+data "google_storage_transfer_project_service_account" "default" {
+  project = var.project_id
+}
+
+resource "google_storage_transfer_job" "batch_logs_transfer_job" {
   description = "This will transfer GitHub LOGS in archive bucket every hour"
-  project     = "${var.project_id}"
+  project     = var.project_id
 
   schedule {
     schedule_start_date {
@@ -22,6 +26,18 @@ resource "google_storage_transfer_job" "batch_logs_transfer_job" {
       bucket_name = "off-net-dev-gh-audit-log-archieve-local"
     }
   }
+}
+
+resource "google_storage_bucket_iam_member" "source_bucket_access" {
+  bucket = "off-net-dev-gh-audit-log-station-local"
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
+}
+
+resource "google_storage_bucket_iam_member" "destination_bucket_access" {
+  bucket = "off-net-dev-gh-audit-log-archieve-local"
+  role   = "roles/storage.objectCreator"
+  member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
 }
 
 

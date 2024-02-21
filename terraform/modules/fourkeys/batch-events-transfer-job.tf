@@ -1,6 +1,10 @@
-resource "google_storage_transfer_job" "batch_events_transfer_job" {  
-  description = "This will transfer GitHub events in archive bucket every hour"
-  project     = "${var.project_id}"
+data "google_storage_transfer_project_service_account" "default" {
+  project = var.project_id
+}
+
+resource "google_storage_transfer_job" "batch_events_transfer_job" {
+  description = "This will transfer GitHub events to the archive bucket every hour"
+  project     = var.project_id
 
   schedule {
     schedule_start_date {
@@ -19,9 +23,19 @@ resource "google_storage_transfer_job" "batch_events_transfer_job" {
     }
 
     gcs_data_sink {
-      bucket_name = "off-net-dev-events-archieve-local"
+      bucket_name = "off-net-dev-events-archive-local"
     }
   }
 }
 
+resource "google_storage_bucket_iam_member" "source_bucket_access" {
+  bucket = "off-net-dev-events-station-local"
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
+}
 
+resource "google_storage_bucket_iam_member" "destination_bucket_access" {
+  bucket = "off-net-dev-events-archieve-local"
+  role   = "roles/storage.objectCreator"
+  member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
+}
