@@ -1,4 +1,4 @@
-data "google_storage_transfer_project_service_account" "default" {
+data "google_storage_transfer_project_service_account" "logs" {
   project = var.project_id
 }
 
@@ -28,13 +28,13 @@ resource "google_storage_transfer_job" "batch_logs_transfer_job" {
   }
 }
 
-resource "google_storage_bucket_iam_member" "source_bucket_access" {
+resource "google_storage_bucket_iam_member" "source_bucket_access_logs" {
   bucket = "off-net-dev-gh-audit-log-station-local"
   role   = "roles/storage.objectViewer"
   member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
 }
 
-resource "google_storage_bucket_iam_member" "destination_bucket_access" {
+resource "google_storage_bucket_iam_member" "destination_bucket_access_logs" {
   bucket = "off-net-dev-gh-audit-log-archieve-local"
   role   = "roles/storage.objectCreator"
   member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
