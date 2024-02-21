@@ -19,7 +19,7 @@ resource "google_storage_transfer_job" "batch_events_transfer_job" {
     }
 
     gcs_data_sink {
-      bucket_name = "off-net-dev-events-archive-local"
+      bucket_name = "off-net-dev-events-archieve-local"
     }
   }
 }
