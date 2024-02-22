@@ -36,7 +36,7 @@ resource "google_storage_bucket_iam_member" "source_bucket_access_logs" {
 
 resource "google_storage_bucket_iam_member" "destination_bucket_access_logs" {
   bucket = "off-net-dev-gh-audit-log-archieve-local"
-  role   = "roles/storage.objectCreator"
+  role   = "roles/storage.admin"
   member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
 }
 
