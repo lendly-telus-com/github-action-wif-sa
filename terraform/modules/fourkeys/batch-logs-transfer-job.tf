@@ -43,7 +43,7 @@ resource "google_storage_transfer_job" "batch_logs_transfer_job" {
     }
     transfer_options {
       delete_objects_from_source_after_transfer = true
-      overwrite_objects_already_existing_in_sink = "DIFFERENT"
+      overwrite_objects_already_existing_in_sink = true
     }
 
     gcs_data_sink {
