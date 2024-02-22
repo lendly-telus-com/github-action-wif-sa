@@ -13,13 +13,13 @@ data "google_storage_bucket" "gh_audit_log_archieve_local" {
 resource "google_storage_bucket_iam_member" "source_bucket_access_logs" {
   bucket = "off-net-dev-gh-audit-log-station-local"
   role   = "roles/storage.admin"
-  member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
+  member = "serviceAccount:project-541105984323@storage-transfer-service.iam.gserviceaccount.com"
 }
 
 resource "google_storage_bucket_iam_member" "destination_bucket_access_logs" {
   bucket = "off-net-dev-gh-audit-log-archieve-local"
   role   = "roles/storage.admin"
-  member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
+  member = "serviceAccount:project-541105984323@storage-transfer-service.iam.gserviceaccount.com"
 }
 
 resource "google_storage_transfer_job" "batch_logs_transfer_job" {
