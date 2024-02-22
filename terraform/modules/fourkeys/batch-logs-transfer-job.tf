@@ -41,6 +41,10 @@ resource "google_storage_transfer_job" "batch_logs_transfer_job" {
       bucket_name = google_storage_bucket.gh_audit_log_station_local.name
       path        = "fourkeys/audit-logs/"
     }
+    transfer_options {
+      delete_objects_from_source_after_transfer = true
+      overwrite_objects_already_existing_in_sink = "DIFFERENT"
+    }
 
     gcs_data_sink {
       bucket_name = google_storage_bucket.gh_audit_log_archieve_local.name
