@@ -2,11 +2,11 @@ data "google_storage_transfer_project_service_account" "logs" {
   project = var.project_id
 }
 
-data "google_storage_bucket" "station_bucket" {
+data "google_storage_bucket" "gh_audit_log_station_local" {
   name          = "off-net-dev-gh-audit-log-station-local"  
 }
 
-data "google_storage_bucket" "archive_bucket" {
+data "google_storage_bucket" "gh_audit_log_archieve_local" {
   name          = "off-net-dev-gh-audit-log-archieve-local"  
 }
 
