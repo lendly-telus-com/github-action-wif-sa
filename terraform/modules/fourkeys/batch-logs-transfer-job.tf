@@ -38,12 +38,12 @@ resource "google_storage_transfer_job" "batch_logs_transfer_job" {
 
   transfer_spec {
     gcs_data_source {
-      bucket_name = google_storage_bucket.station_bucket.name
+      bucket_name = google_storage_bucket.gh_audit_log_station_local.name
       path        = "fourkeys/audit-logs/"
     }
 
     gcs_data_sink {
-      bucket_name = google_storage_bucket.archive_bucket.name
+      bucket_name = google_storage_bucket.gh_audit_log_archieve_local.name
     }
   }
 
