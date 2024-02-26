@@ -39,14 +39,12 @@ resource "google_project_iam_member" "event-receiving" {
   project = var.project_id
   role    = "roles/eventarc.eventReceiver"
   member  = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
-  depends_on = [google_project_iam_member.invoking]
 }
 
 resource "google_project_iam_member" "artifactregistry-reader" {
   project = var.project_id
   role     = "roles/artifactregistry.reader"
   member   = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
-  depends_on = [google_project_iam_member.event-receiving]
 }
 
 resource "google_cloudfunctions2_function" "batch_gh_audit_log_function" {
