@@ -4,6 +4,7 @@ data "archive_file" "batch_gh_audit_log_source" {
   output_path = "/tmp/batch_gh_audit_log.zip"
 }
 
+## create a source code bucket
 resource "google_storage_bucket_object" "batch_gh_audit_log_zip" {
   source       = data.archive_file.batch_gh_audit_log_source.output_path
   name   = "src-${data.archive_file.batch_gh_audit_log_source.output_md5}.zip"
@@ -11,6 +12,18 @@ resource "google_storage_bucket_object" "batch_gh_audit_log_zip" {
 }
 
 data "google_storage_project_service_account" "gcs_account" {}
+
+resource "google_storage_bucket_iam_member" "gh_audit_log_bucket_viewer" {
+  bucket = "gcs://gh-audit-log-bucket"
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
+}
+
+resource "google_storage_bucket_iam_member" "gh_audit_log_bucket_viewer" {
+  bucket = "gcs://gh-audit-log-bucket"
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
+}
 
 resource "google_project_iam_member" "invoking" {
   project = var.project_id
