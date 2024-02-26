@@ -31,6 +31,13 @@ resource "google_project_iam_member" "invoking" {
   depends_on = [google_project_iam_member.gcs-pubsub-publishing]
 }
 
+resource "google_project_iam_member" "event-receiving" {
+  project = var.project_id
+  role    = "roles/eventarc.eventReceiver"
+  member  = "serviceAccount:${google_service_account.gh-audit-log-account.email}"
+  depends_on = [google_project_iam_member.invoking]
+}
+
 
 resource "google_project_iam_member" "artifactregistry-reader" {
   project = var.project_id
