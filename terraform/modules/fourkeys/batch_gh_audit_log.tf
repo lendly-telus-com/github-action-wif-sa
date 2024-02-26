@@ -77,7 +77,7 @@ resource "google_cloudfunctions2_function" "batch_gh_audit_log_function" {
 
     ingress_settings = "ALLOW_INTERNAL_ONLY"
     all_traffic_on_latest_revision = true
-    service_account_email = google_service_account.gh-audit-log-account.email
+    service_account_email = "dora-wif@off-net-dev.iam.gserviceaccount.com"
   }
 
   event_trigger {
