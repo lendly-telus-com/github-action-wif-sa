@@ -68,14 +68,14 @@ resource "google_cloudfunctions2_function" "batch_gh_audit_log_function" {
 
     ingress_settings = "ALLOW_INTERNAL_ONLY"
     all_traffic_on_latest_revision = true
-    service_account_email = "grafana-reload@off-net-dev.iam.gserviceaccount.com"
+    service_account_email = "dora-wif@off-net-dev.iam.gserviceaccount.com"
   }
 
   event_trigger {
     trigger_region = var.region
     event_type = "google.cloud.storage.object.v1.finalized"
     retry_policy = "RETRY_POLICY_RETRY"
-    service_account_email = "grafana-reload@off-net-dev.iam.gserviceaccount.com"
+    service_account_email = "dora-wif@off-net-dev.iam.gserviceaccount.com"
 
     event_filters {
       attribute = "bucket"
