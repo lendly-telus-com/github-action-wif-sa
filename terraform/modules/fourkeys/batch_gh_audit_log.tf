@@ -11,44 +11,39 @@ resource "google_storage_bucket_object" "batch_gh_audit_log_zip" {
   bucket = google_storage_bucket.batch_gh_log_function_bucket.name
 }
 
-data "google_service_account" "gh-audit-log-account" {
-  account_id = "dora-wif"  # Assuming "dora-wif" is the existing service account ID
-}
+# data "google_service_account" "gh-audit-log-account" {
+#   account_id = "dora-wif"  # Assuming "dora-wif" is the existing service account ID
+# }
 
-resource "google_project_iam_member" "gcs-pubsub-publishing" {
-  project = var.project_id
-  role    = "roles/pubsub.publisher"
-  member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
-}
+# resource "google_project_iam_member" "gcs-pubsub-publishing" {
+#   project = var.project_id
+#   role    = "roles/pubsub.publisher"
+#   member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
+# }
 
-resource "google_project_iam_member" "invoking" {
-  project = var.project_id
-  role    = "roles/run.invoker"
-  member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
-  depends_on = [google_project_iam_member.gcs-pubsub-publishing]
-}
+# resource "google_project_iam_member" "invoking" {
+#   project = var.project_id
+#   role    = "roles/run.invoker"
+#   member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
+#   depends_on = [google_project_iam_member.gcs-pubsub-publishing]
+# }
 
-resource "google_project_iam_member" "event-receiving" {
-  project = var.project_id
-  role    = "roles/eventarc.eventReceiver"
-  member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
-  depends_on = [google_project_iam_member.invoking]
-}
+# resource "google_project_iam_member" "event-receiving" {
+#   project = var.project_id
+#   role    = "roles/eventarc.eventReceiver"
+#   member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
+#   depends_on = [google_project_iam_member.invoking]
+# }
 
 
-resource "google_project_iam_member" "artifactregistry-reader" {
-  project = var.project_id
-  role     = "roles/artifactregistry.reader"
-  member   = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
-  depends_on = [google_project_iam_member.event-receiving]
-}
+# resource "google_project_iam_member" "artifactregistry-reader" {
+#   project = var.project_id
+#   role     = "roles/artifactregistry.reader"
+#   member   = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
+#   depends_on = [google_project_iam_member.event-receiving]
+# }
 
 resource "google_cloudfunctions2_function" "batch_gh_audit_log_function" {
-  depends_on = [
-    google_project_iam_member.event-receiving,
-    google_project_iam_member.artifactregistry-reader,
-  ]
-
   name    = "batch_gh_audit_log"
   description = "Batch GH Audit Log"
   location = var.region
