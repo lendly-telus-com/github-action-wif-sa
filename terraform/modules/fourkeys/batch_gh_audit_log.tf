@@ -17,7 +17,7 @@ data "google_service_account" "gh-audit-log-account" {
 
 resource "google_project_iam_member" "gcs-pubsub-publishing" {
   project = var.project_id
-  role    = "roles/pubsub.Admin"
+  role    = "roles/pubsub.publisher"
   member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
 }
 
