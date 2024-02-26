@@ -11,28 +11,27 @@ resource "google_storage_bucket_object" "batch_gh_audit_log_zip" {
   bucket = google_storage_bucket.batch_gh_log_function_bucket.name
 }
 
-resource "google_service_account" "gh-audit-log-account" {
-  account_id   = "dora-wif"
-  display_name = "GH Audit Log Service Account"
+data "google_service_account" "gh-audit-log-account" {
+  account_id = "dora-wif"  # Assuming "dora-wif" is the existing service account ID
 }
 
 resource "google_project_iam_member" "gcs-pubsub-publishing" {
   project = var.project_id
   role    = "roles/pubsub.Admin"
-  member  = "serviceAccount:${google_service_account.gh-audit-log-account.email}"
+  member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
 }
 
 resource "google_project_iam_member" "invoking" {
   project = var.project_id
   role    = "roles/run.invoker"
-  member  = "serviceAccount:${google_service_account.gh-audit-log-account.email}"
+  member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
   depends_on = [google_project_iam_member.gcs-pubsub-publishing]
 }
 
 resource "google_project_iam_member" "event-receiving" {
   project = var.project_id
   role    = "roles/eventarc.eventReceiver"
-  member  = "serviceAccount:${google_service_account.gh-audit-log-account.email}"
+  member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
   depends_on = [google_project_iam_member.invoking]
 }
 
@@ -40,7 +39,7 @@ resource "google_project_iam_member" "event-receiving" {
 resource "google_project_iam_member" "artifactregistry-reader" {
   project = var.project_id
   role     = "roles/artifactregistry.reader"
-  member   = "serviceAccount:${google_service_account.gh-audit-log-account.email}"
+  member   = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
   depends_on = [google_project_iam_member.event-receiving]
 }
 
