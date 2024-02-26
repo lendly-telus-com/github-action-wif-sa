@@ -19,12 +19,6 @@ resource "google_storage_bucket_iam_member" "gh_audit_log_bucket_viewer" {
   member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
 }
 
-resource "google_storage_bucket_iam_member" "gh_audit_log_bucket_viewer" {
-  bucket = "gcs://gh-audit-log-bucket"
-  role   = "roles/storage.objectAdmin"
-  member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
-}
-
 resource "google_project_iam_member" "invoking" {
   project = var.project_id
   role    = "roles/run.invoker"
