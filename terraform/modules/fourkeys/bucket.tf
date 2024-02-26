@@ -21,3 +21,9 @@ resource "google_storage_bucket" "gh_audit_log_archieve_local" {
   location                    = var.region
   uniform_bucket_level_access = true
 }
+
+resource "google_storage_bucket" "batch_gh_log_function_bucket" {
+  name                        = "${var.project_id}-batch-gh-log-function"
+  location                    = var.region
+  uniform_bucket_level_access = true
+}
