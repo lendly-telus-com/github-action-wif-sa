@@ -11,17 +11,15 @@ resource "google_storage_bucket_object" "batch_gh_audit_log_zip" {
   bucket = google_storage_bucket.batch_gh_log_function_bucket.name
 }
 
-data "google_storage_project_service_account" "gcs_account" {}
-
-resource "google_project_iam_member" "gcs-pubsub-publishing" {
-  project = var.project_id
-  role    = "roles/pubsub.publisher"
-  member  = "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
-}
-
 resource "google_service_account" "gh-audit-log-account" {
   account_id   = "dora-wif"
   display_name = "GH Audit Log Service Account"
+}
+
+resource "google_project_iam_member" "gcs-pubsub-publishing" {
+  project = var.project_id
+  role    = "roles/pubsub.Admin"
+  member  = "serviceAccount:${google_service_account.gh-audit-log-account.email}"
 }
 
 resource "google_project_iam_member" "invoking" {
