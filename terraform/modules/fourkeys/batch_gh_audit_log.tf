@@ -13,28 +13,30 @@ resource "google_storage_bucket_object" "batch_gh_audit_log_zip" {
 
 data "google_storage_project_service_account" "gcs_account" {}
 
-resource "google_storage_bucket_iam_member" "gh_audit_log_bucket_viewer" {
-  bucket = "gcs://gh-audit-log-bucket"
-  role   = "roles/storage.objectAdmin"
-  member = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
+resource "google_project_iam_member" "gcs-pubsub-publishing" {
+  project = var.project_id
+  role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
+}
+
+resource "google_service_account" "gh-audit-log-account" {
+  account_id   = "dora-wif"
+  display_name = "GH Audit Log Service Account"
 }
 
 resource "google_project_iam_member" "invoking" {
   project = var.project_id
   role    = "roles/run.invoker"
-  member  = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
+  member  = "serviceAccount:${google_service_account.gh-audit-log-account.email}"
+  depends_on = [google_project_iam_member.gcs-pubsub-publishing]
 }
 
-resource "google_project_iam_member" "event-receiving" {
-  project = var.project_id
-  role    = "roles/eventarc.eventReceiver"
-  member  = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
-}
 
 resource "google_project_iam_member" "artifactregistry-reader" {
   project = var.project_id
   role     = "roles/artifactregistry.reader"
-  member   = "serviceAccount:dora-wif@off-net-dev.iam.gserviceaccount.com"
+  member   = "serviceAccount:${google_service_account.gh-audit-log-account.email}"
+  depends_on = [google_project_iam_member.event-receiving]
 }
 
 resource "google_cloudfunctions2_function" "batch_gh_audit_log_function" {
@@ -78,7 +80,7 @@ resource "google_cloudfunctions2_function" "batch_gh_audit_log_function" {
 
     event_filters {
       attribute = "bucket"
-      value     = "gcs://gh-audit-log-bucket"
+      value     = "gh-audit-log-bucket"
     }
   }
 }
