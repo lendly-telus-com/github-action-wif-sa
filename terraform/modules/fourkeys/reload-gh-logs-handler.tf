@@ -16,7 +16,7 @@ module "gh_log_handler_registry_url" {
   create_cmd_entrypoint  = "gcloud"
   create_cmd_body        = "builds submit ../batch_gh_audit_log --tag=${local.reload_gh_log_handler_url}:${data.archive_file.gh_log_handler.output_sha} --project=${var.project_id} --gcs-log-dir=gs://tf-cloud-build-gh-logs-handler"
   destroy_cmd_entrypoint = "gcloud"
-  destroy_cmd_body       = "container images delete ${local.reload_gh_log_handler_url}:${data.archive_file.gh_log_handler.output_sha} --quiet"
+  destroy_cmd_body       = "container images delete ${local.reload_gh_log_handler_url}:${data.archive_file.gh_log_handler.output_sha} --quiet --force-delete-tags"
 }
 
 
