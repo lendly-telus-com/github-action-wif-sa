@@ -11,6 +11,12 @@ resource "google_storage_bucket_object" "batch_gh_audit_log_zip" {
   bucket = google_storage_bucket.batch_gh_log_function_bucket.name
 }
 
+resource "google_storage_bucket" "trigger-bucket" {
+  name     = "gh-log-gcf-trigger-bucket"
+  location = var.region
+  uniform_bucket_level_access = true
+}
+
 # data "google_service_account" "gh-audit-log-account" {
 #   account_id = "dora-wif"  # Assuming "dora-wif" is the existing service account ID
 # }
@@ -79,7 +85,7 @@ resource "google_cloudfunctions2_function" "batch_gh_audit_log_function" {
 
     event_filters {
       attribute = "bucket"
-      value     = "gh-audit-log-bucket"
+      value     = google_storage_bucket.trigger-bucket.name
     }
   }
 }
