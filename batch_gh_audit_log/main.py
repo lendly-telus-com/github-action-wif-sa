@@ -1,12 +1,14 @@
 import json
 import os
 import sys
+from flask import Flask
 
 from google.cloud import storage
 from dotenv import load_dotenv
 from datetime import datetime
 import gcs_writer as gcs
 
+app = Flask(__name__)
 load_dotenv()
 bucket_name = os.getenv("BUCKET_NAME")
 
@@ -77,8 +79,9 @@ def read_gcs_object(file_name, bucket_name):
     for line_content in file_content.splitlines():        
         log_content = json.loads(line_content)        
         yield log_content
-
-def persist_data(event, context):
+        
+@app.route("/persist_data", methods=["POST"])
+def persist_data(event):
     """Triggered by a change to a Cloud Storage bucket.
     Args:
          event (dict): Event payload.
@@ -86,3 +89,7 @@ def persist_data(event, context):
     """
     for log_content in read_gcs_object(event["name"], event["bucket"]):
         to_bucket_station(log_content)  
+ 
+if __name__ == "__main__":
+    PORT = int(os.getenv("PORT")) if os.getenv("PORT") else 8080
+    app.run(host="127.0.0.1", port=PORT, debug=True)        
