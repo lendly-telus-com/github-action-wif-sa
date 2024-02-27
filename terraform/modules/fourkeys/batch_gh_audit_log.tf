@@ -1,18 +1,18 @@
-data "archive_file" "batch_gh_audit_log_source" {
-  type        = "zip"
-  source_dir  = "../batch_gh_audit_log"
-  output_path = "/tmp/batch_gh_audit_log.zip"
+resource "google_storage_bucket" "source-bucket" {
+  name     = "batch-gh-lo-gcf-source-bucket"
+  location = var.region
+  uniform_bucket_level_access = true
 }
 
-## create a source code bucket
-resource "google_storage_bucket_object" "batch_gh_audit_log_zip" {
-  source       = data.archive_file.batch_gh_audit_log_source.output_path
-  name   = "src-${data.archive_file.batch_gh_audit_log_source.output_md5}.zip"
-  bucket = google_storage_bucket.batch_gh_log_function_bucket.name
+resource "google_storage_bucket_object" "object" {
+  name   = "function-source.zip"
+  bucket = google_storage_bucket.source-bucket.name
+  source = "./batch_gh_audit_log/function-source.zip"  # Add path to the zipped function source code
 }
+
 
 resource "google_storage_bucket" "trigger-bucket" {
-  name     = "gh-log-gcf-trigger-bucket"
+  name     = "batch-gh-log-audit-source-bucket"
   location = var.region
   uniform_bucket_level_access = true
 }
@@ -60,8 +60,8 @@ resource "google_cloudfunctions2_function" "batch_gh_audit_log_function" {
 
     source {
       storage_source {
-        bucket = google_storage_bucket.batch_gh_log_function_bucket.name
-        object = google_storage_bucket_object.batch_gh_audit_log_zip.name
+        bucket = google_storage_bucket.source-bucket.name
+        object = google_storage_bucket_object.object.name
       }
     }
   }
