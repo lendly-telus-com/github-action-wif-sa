@@ -68,7 +68,7 @@ def check_batch_file():
             record_data = json.loads(record)
             print("Count exist object", len(record_data))
 
-            if len(record_data) == 2:
+            if len(record_data) == 1:
                 print("BASE FILE IS FULL CREATE A NEW A NEW ONE")
                 new_target_number = create_new_target_file(target_exists)
                 print("New Target number is:", new_target_number)                
