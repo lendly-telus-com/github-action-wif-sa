@@ -5,9 +5,9 @@ resource "google_storage_bucket" "source-bucket" {
 }
 
 resource "google_storage_bucket_object" "object" {
-  name   = "function-source.zip"
+  name   = "batch-gh-log-function-source.zip"
   bucket = google_storage_bucket.source-bucket.name
-  source = "./batch_gh_audit_log/function-source.zip"  # Add path to the zipped function source code
+  source = "../batch_gh_audit_log/function-source.zip"  # Add path to the zipped function source code
 }
 
 
