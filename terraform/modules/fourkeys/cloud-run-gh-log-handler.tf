@@ -1,4 +1,4 @@
-data "archive_file" "gh_log_handler" {
+data "archive_file" "gh_log_handler_2" {
   type        = "zip"
   source_dir  = "../batch_gh_audit_log"
   output_path = "/tmp/batch_gh_audit_log.zip"
@@ -14,21 +14,9 @@ module "gh_log_handler_registry_url" {
   source                 = "terraform-google-modules/gcloud/google"
   version                = "~> 2.0"
   create_cmd_entrypoint  = "gcloud"
-  create_cmd_body        = "builds submit ../batch_gh_audit_log --tag=${local.gh_log_handler_url}:${data.archive_file.gh_log_handler.output_sha} --project=${var.project_id} --gcs-log-dir=gs://tf-cloud-build-gh-logs-handler"
+  create_cmd_body        = "builds submit ../batch_gh_audit_log --tag=${local.gh_log_handler_url_2}:${data.archive_file.gh_log_handler_2.output_sha} --project=${var.project_id} --gcs-log-dir=gs://tf-cloud-build-gh-logs-handler"
   destroy_cmd_entrypoint = "gcloud"
-  # destroy_cmd_body       = "container images delete ${local.gh_log_handler_url}:${data.archive_file.gh_log_handler.output_sha} --quiet"
-  destroy_cmd_body = <<-EOT
-  set -e
-  # Get the image digest using gcloud command
-  IMAGE_DIGEST=$(gcloud container images list-tags ${local.gh_log_handler_url} --format='get(digest)' --filter="tags=${data.archive_file.gh_log_handler.output_sha}" --quiet --limit=1)
-  
-  # Check if the image digest is not empty before proceeding
-  if [ -n "$IMAGE_DIGEST" ]; then
-    gcloud container images delete ${local.gh_log_handler_url}@${IMAGE_DIGEST} --quiet
-  else
-    echo "Image not found or already deleted."
-  fi
-  EOT
+  destroy_cmd_body       = "container images delete ${local.gh_log_handler_url_2}:${data.archive_file.gh_log_handler_2.output_sha} --quiet"
 }
 
 
@@ -65,14 +53,14 @@ resource "google_cloud_run_service" "batch_logs_handler" {
   template {
     metadata {
       annotations = {
-        "client.knative.dev/user-image"        = "${local.gh_log_handler_url}:${data.archive_file.gh_log_handler.output_sha}"
+        "client.knative.dev/user-image"        = "${local.gh_log_handler_url_2}:${data.archive_file.gh_log_handler.output_sha}"
         "run.googleapis.com/client-name"       = "cloud-console"
         "autoscaling.knative.dev/minScale"     = "1"
       }
     }
     spec {
       containers {
-        image = "${local.gh_log_handler_url}:${data.archive_file.gh_log_handler.output_sha}"
+        image = "${local.gh_log_handler_url_2}:${data.archive_file.gh_log_handler.output_sha}"
         env {
           name  = "project-name"
           value = var.project_id
