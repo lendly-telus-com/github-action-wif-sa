@@ -10,5 +10,5 @@ locals {
   organization_fetcher_container_url = format("gcr.io/%s/organization_fetcher", var.project_id)
   events_bq_writer_container_url     = format("gcr.io/%s/batch_events", var.project_id)
   gh_logs_bq_writer_container_url    = format("gcr.io/%s/batch_logs", var.project_id) 
-  test_artifact_registry_url         = format("northamerica-northeast1-docker.pkg.dev/off-net-dev/gcf-artifacts/%s/logs-by-artifact", var.project_id)
+  test_artifact_registry_url         = format("${var.region}-docker.pkg.dev/${var.project_id}/gcf-artifacts/%s/logs-by-artifact", var.project_id)
 }
