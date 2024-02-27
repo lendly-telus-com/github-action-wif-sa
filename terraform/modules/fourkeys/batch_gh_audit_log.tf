@@ -1,14 +1,18 @@
-resource "google_storage_bucket" "source-bucket" {
-  name     = "batch-gh-lo-gcf-source-bucket"
-  location = var.region
-  uniform_bucket_level_access = true
+data "archive_file" "gh_log_cf" {
+  type        = "zip"
+  source_dir  = "../batch_gh_audit_log"
+  output_path = "/tmp/batch_gh_audit_log.zip"
 }
 
-resource "google_storage_bucket_object" "object" {
-  name   = "batch-gh-log-function-source.zip"
-  bucket = google_storage_bucket.source-bucket.name
-  source = "../batch_gh_audit_log/function-source.zip"  # Add path to the zipped function source code
+module "gcloud_build_batch_gh_log_cf" {
+  source                 = "terraform-google-modules/gcloud/google"
+  version                = "~> 2.0"
+  create_cmd_entrypoint  = "gcloud"
+  create_cmd_body        = "builds submit ../batch_gh_audit_log --tag=${local.gh_log_cf_url}:${data.archive_file.gh_log_cf.output_sha} --project=${var.project_id} --gcs-log-dir=gs://tf-cloud-build-logs"
+  destroy_cmd_entrypoint = "gcloud"
+  destroy_cmd_body       = "container images delete ${local.gh_log_cf_url}:${data.archive_file.gh_log_cf.output_sha} --quiet"
 }
+
 
 
 resource "google_storage_bucket" "trigger-bucket" {
@@ -17,53 +21,16 @@ resource "google_storage_bucket" "trigger-bucket" {
   uniform_bucket_level_access = true
 }
 
-# data "google_service_account" "gh-audit-log-account" {
-#   account_id = "dora-wif"  # Assuming "dora-wif" is the existing service account ID
-# }
-
-# resource "google_project_iam_member" "gcs-pubsub-publishing" {
-#   project = var.project_id
-#   role    = "roles/pubsub.publisher"
-#   member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
-# }
-
-# resource "google_project_iam_member" "invoking" {
-#   project = var.project_id
-#   role    = "roles/run.invoker"
-#   member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
-#   depends_on = [google_project_iam_member.gcs-pubsub-publishing]
-# }
-
-# resource "google_project_iam_member" "event-receiving" {
-#   project = var.project_id
-#   role    = "roles/eventarc.eventReceiver"
-#   member  = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
-#   depends_on = [google_project_iam_member.invoking]
-# }
-
-
-# resource "google_project_iam_member" "artifactregistry-reader" {
-#   project = var.project_id
-#   role     = "roles/artifactregistry.reader"
-#   member   = "serviceAccount:${data.google_service_account.gh-audit-log-account.email}"
-#   depends_on = [google_project_iam_member.event-receiving]
-# }
 
 resource "google_cloudfunctions2_function" "batch_gh_audit_log_function" {
   name    = "batch_gh_audit_log"
   description = "Batch GH Audit Log"
   location = var.region
+  depends_on  = [module.gcloud_build_batch_gh_log_cf]
 
   build_config {
     runtime = "python310"
     entry_point = "persist_data"
-
-    source {
-      storage_source {
-        bucket = google_storage_bucket.source-bucket.name
-        object = google_storage_bucket_object.object.name
-      }
-    }
   }
 
   service_config {
