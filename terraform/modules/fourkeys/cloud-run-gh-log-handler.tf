@@ -53,14 +53,14 @@ resource "google_cloud_run_service" "batch_logs_handler" {
   template {
     metadata {
       annotations = {
-        "client.knative.dev/user-image"        = "${local.gh_log_handler_url_2}:${data.archive_file.gh_log_handler.output_sha}"
+        "client.knative.dev/user-image"        = "${local.gh_log_handler_url_2}:${data.archive_file.gh_log_handler_2.output_sha}"
         "run.googleapis.com/client-name"       = "cloud-console"
         "autoscaling.knative.dev/minScale"     = "1"
       }
     }
     spec {
       containers {
-        image = "${local.gh_log_handler_url_2}:${data.archive_file.gh_log_handler.output_sha}"
+        image = "${local.gh_log_handler_url_2}:${data.archive_file.gh_log_handler_2.output_sha}"
         env {
           name  = "project-name"
           value = var.project_id
