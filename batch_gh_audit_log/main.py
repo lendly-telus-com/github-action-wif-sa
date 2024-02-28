@@ -1,14 +1,12 @@
 import json
 import os
 import sys
-from flask import Flask, request
 
 from google.cloud import storage
 from dotenv import load_dotenv
 from datetime import datetime
 import gcs_writer as gcs
 
-app = Flask(__name__)
 load_dotenv()
 bucket_name = os.getenv("BUCKET_NAME")
 
@@ -74,23 +72,34 @@ def read_gcs_object(file_name, bucket_name):
     client = storage.Client()
     bucket = client.bucket(bucket_name)
     file_content = bucket.blob(file_name).download_as_text()
+    #bucket = client.get_bucket(bucket_name)
+    #blob = bucket.get_blob(file_name)
+    #file_content = blob.download_as_text()
+    
+    # # local/mock test
+    # client = storage.Client.from_service_account_json(sa_path)  
+    # bucket = client.bucket(bucket_name)
+    # file_content = bucket.blob(file_path).download_as_text()
+    
 
     print(f"Processing file: {file_name}.")
     for line_content in file_content.splitlines():        
         log_content = json.loads(line_content)        
         yield log_content
-        
-@app.route("/persist_data", methods=["POST"])
-def persist_data():
-    event = request.get_json()
+
+# # local/mock test
+## ENTRY HERE were mocking the event in Storage by creating a bucket in GCP harcoded with event log 2024/01/01/test1.json.log.gz
+# def persist_data(event):
+#     for log_content in read_gcs_object(event["name"], event["bucket"]):
+#         to_bucket_station(log_content)        
+# persist_data({"name": file_path ,"bucket":bucket_name})   
+
+
+def persist_data(event, context):
     """Triggered by a change to a Cloud Storage bucket.
     Args:
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
     for log_content in read_gcs_object(event["name"], event["bucket"]):
-        to_bucket_station(log_content)  
- 
-if __name__ == "__main__":
-    PORT = int(os.getenv("PORT")) if os.getenv("PORT") else 8080
-    app.run(host="127.0.0.1", port=PORT, debug=True)        
+        to_bucket_station(log_content)    
