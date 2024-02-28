@@ -10,6 +10,11 @@ resource "google_storage_bucket" "function_bucket" {
   uniform_bucket_level_access = true
 }
 
+resource "google_storage_bucket" "dump_logs" {
+  name                        = "${var.project_id}-batch-gh-audit-logs"
+  location                    = var.region
+  uniform_bucket_level_access = true
+}
 
 resource "google_storage_bucket_object" "load_gh_audit_log_zip" {
   source       = data.archive_file.load_gh_audit_log_source.output_path
@@ -44,3 +49,29 @@ resource "google_cloudfunctions2_function" "function" {
 output "function_uri" { 
   value = google_cloudfunctions2_function.function.service_config[0].uri
 }
+
+resource "google_eventarc_trigger" "cf_gh_log_trigger" {
+    name = "cf-gh-log-trigger"
+    location = var.region
+	
+	matching_criteria {
+    attribute = "bucket"
+    value     = google_storage_bucket.dump_logs.name
+    }
+  
+    matching_criteria {
+        attribute = "type"
+        value = "google.cloud.storage.object.v1.finalized"
+    }
+
+    service_account = local.compute_engine_service_account
+    
+    destination {
+        cloud_run_service {
+            service = google_cloudfunctions2_function.function.name
+            region = var.region
+            path = "/persist_data"
+        }
+    }
+}
+
