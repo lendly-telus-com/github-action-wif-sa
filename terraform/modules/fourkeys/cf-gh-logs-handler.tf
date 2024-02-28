@@ -40,38 +40,27 @@ resource "google_cloudfunctions2_function" "function" {
   }
 
   service_config {
-    max_instance_count  = 1
+    max_instance_count  = 3
+    min_instance_count = 1
     available_memory    = "1024M"
     timeout_seconds     = 60
+    ingress_settings = "ALLOW_INTERNAL_ONLY"
+    all_traffic_on_latest_revision = true
+    service_account_email = local.cloudbuild_service_account
+  }
+
+  event_trigger {
+    event_type = "google.cloud.storage.object.v1.finalized"
+    retry_policy = "RETRY_POLICY_RETRY"
+    service_account_email = local.cloudbuild_service_account
+    event_filters {
+      attribute = "bucket"
+      value = google_storage_bucket.dump_logs.name
+    }
   }
 }
 
-output "function_uri" { 
-  value = google_cloudfunctions2_function.function.service_config[0].uri
-}
 
-resource "google_eventarc_trigger" "cf_gh_log_trigger" {
-    name = "cf-gh-log-trigger"
-    location = var.region
-	
-	matching_criteria {
-    attribute = "bucket"
-    value     = google_storage_bucket.dump_logs.name
-    }
-  
-    matching_criteria {
-        attribute = "type"
-        value = "google.cloud.storage.object.v1.finalized"
-    }
 
-    service_account = local.compute_engine_service_account
-    
-    destination {
-        cloud_run_service {
-            service = google_cloudfunctions2_function.function.name
-            region = var.region
-            path = "/persist_data"
-        }
-    }
-}
+
 
