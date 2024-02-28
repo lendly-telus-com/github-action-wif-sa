@@ -8,9 +8,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+sa_path  = os.getenv("SA")
 bucket_name = os.getenv("STATION_BUCKET")
 folder_name = os.getenv("FOLDER_NAME")
 
+# storage_client = storage.Client.from_service_account_json(sa_path)
 storage_client = storage.Client()
 current_date = datetime.utcnow().isoformat()   
 base_event = f"fourkeys/audit-logs/event_1_{current_date}.json"
@@ -68,10 +70,10 @@ def check_batch_file():
             record_data = json.loads(record)
             print("Count exist object", len(record_data))
 
-            if len(record_data) == 2:
+            if len(record_data) == 6:
                 print("BASE FILE IS FULL CREATE A NEW A NEW ONE")
                 new_target_number = create_new_target_file(target_exists)
-                print("New Target number is:", new_target_number)                
+                print("New Target number is:", new_target_number)
                 new_target_file = f"fourkeys/audit-logs/event_{new_target_number}_{current_date}.json"                
                 bucket.blob(new_target_file).upload_from_string(json.dumps([]),content_type="application/json")                             
                 return {"file": new_target_file, "status": "success"}
