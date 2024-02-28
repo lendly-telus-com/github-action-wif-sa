@@ -46,6 +46,10 @@ resource "google_cloudfunctions2_function" "function" {
   }
 }
 
+output "function_uri" { 
+  value = google_cloudfunctions2_function.function.service_config[0].uri
+}
+
 resource "google_eventarc_trigger" "cf_gh_log_trigger" {
     name = "cf-gh-log-trigger"
     location = var.region
