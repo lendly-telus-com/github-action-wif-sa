@@ -67,7 +67,7 @@ resource "google_cloudfunctions2_function" "event_function" {
   description = "a new function"
 
   build_config {
-    runtime = "python310"
+    runtime = "python3.8"
     entry_point = "persist_data" 
     source {
       storage_source {
@@ -89,7 +89,6 @@ resource "google_cloudfunctions2_function" "event_function" {
 
   event_trigger {
     event_type = "google.cloud.storage.object.v1.finalized"
-    retry_policy = "RETRY_POLICY_RETRY"
     service_account_email = local.compute_engine_service_account
     event_filters {
       attribute = "bucket"
