@@ -35,34 +35,35 @@ def has_valid_fields(log_data):
 
 
 def to_bucket_station(log_data):
-    if "_document_id" not in log_data:
-        print(f"Ignoring log missing _document_id: {json.dumps()}.")
-        return
+    try:
+        if "_document_id" not in log_data:
+            print(f"Ignoring log missing _document_id: {json.dumps()}.")
+            return
 
-    if not has_valid_fields(log_data):
-        print(f"Ignoring log: {log_data['_document_id']}.")
-        return 
+        if not has_valid_fields(log_data):
+            print(f"Ignoring log: {log_data['_document_id']}.")
+            return 
 
-    def fix_timestamp(ts):
-        return datetime.utcfromtimestamp(int(ts) / 1000).strftime('%Y-%m-%d %H:%M:%S')
+        def fix_timestamp(ts):
+            return datetime.utcfromtimestamp(int(ts) / 1000).strftime('%Y-%m-%d %H:%M:%S')
 
-    payload = {
-        "document_id": log_data["_document_id"],
-        "timestamp": fix_timestamp(log_data["@timestamp"]),
-        "metadata": log_data,
-        "actor": log_data["actor"] if "actor" in log_data else None,
-        "user": log_data["user"] if "user" in log_data else None,
-        "action": log_data["action"] if "action" in log_data else None,
-        "org": log_data["org"] if "org" in log_data else None,
-        "repo": log_data["repo"] if "repo" in log_data else None,
-        "team": log_data["team"] if "team" in log_data else None,
-        "pull_request_id": log_data["pull_request_id"] if "pull_request_id" in log_data else None
-    }    
-    
-    errors = gcs.upload_to_gcs(payload)
-    if errors:
-        print(f"[BigQuery] Error: {errors}", file=sys.stderr)
-
+        payload = {
+            "document_id": log_data["_document_id"],
+            "timestamp": fix_timestamp(log_data["@timestamp"]),
+            "metadata": log_data,
+            "actor": log_data["actor"] if "actor" in log_data else None,
+            "user": log_data["user"] if "user" in log_data else None,
+            "action": log_data["action"] if "action" in log_data else None,
+            "org": log_data["org"] if "org" in log_data else None,
+            "repo": log_data["repo"] if "repo" in log_data else None,
+            "team": log_data["team"] if "team" in log_data else None,
+            "pull_request_id": log_data["pull_request_id"] if "pull_request_id" in log_data else None
+        }    
+        
+        return payload   
+    except Exception as error:        
+        print(f"An error occurred in get_target_file: {error}")
+        return None      
 
 def read_gcs_object(file_name, bucket_name):  
     if not file_name.endswith(".json.log.gz"):
@@ -101,5 +102,11 @@ def persist_data(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
+    results = []
     for log_content in read_gcs_object(event["name"], event["bucket"]):
-        to_bucket_station(log_content)    
+        results.append(to_bucket_station(log_content))    
+    try:
+        gcs.upload_to_gcs(results)        
+    except Exception as error:        
+        print(f"An error occurred in get_target_file: {error}")
+         
