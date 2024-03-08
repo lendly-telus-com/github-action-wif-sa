@@ -22,14 +22,18 @@ resource "google_iam_workload_identity_pool_provider" "provider" {
   }
 }
 
-resource "google_project_iam_member" "workload_identity" {
-  project = "off-net-dev"
+resource "google_project_iam_binding" "workload" {
+  project = "off-net-dev"  
   role    = "roles/iam.workloadIdentityUser"
-  member  = "principalSet://iam.googleapis.com/projects/541105984323/locations/global/workloadIdentityPools/unleash-pool/attribute.repository/TeamDevEx/unleash-nest"
+  members = [
+    "serviceAccount:unleash-sa@off-net-dev.iam.gserviceaccount.com",
+  ]
 }
 
-resource "google_project_iam_member" "artifact_reg" {
-  project = "off-net-dev"
+resource "google_project_iam_binding" "writer" {
+  project = "off-net-dev"  
   role    = "roles/artifactregistry.writer"
-  member  = "principalSet://iam.googleapis.com/projects/541105984323/locations/global/workloadIdentityPools/unleash-pool/attribute.repository/TeamDevEx/unleash-nest"
+  members = [
+    "serviceAccount:unleash-sa@off-net-dev.iam.gserviceaccount.com",
+  ]
 }
