@@ -23,7 +23,7 @@ resource "google_project_iam_binding" "sa_binding_artifact_registry" {
 }
 
 
-
+## added bindings
 resource "google_iam_workforce_pool" "pool" {
   workforce_pool_id = "example-pool"
   parent            = "organizations/off-net-dev"
