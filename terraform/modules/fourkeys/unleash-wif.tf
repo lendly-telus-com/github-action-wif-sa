@@ -1,9 +1,8 @@
-resource "google_iam_workforce_pool" "pool" {
-  workforce_pool_id = "unleash-pool"
-  parent            = "organizations/off-net-dev"
-  location          = "global"
+resource "google_service_account" "unleash_sa" {
+  account_id   = "unleash-sa"
+  display_name = "Unleash Service Account"
+  project      = "off-net-dev"
 }
-
 
 resource "google_iam_workload_identity_pool" "pool" {
   workload_identity_pool_id = "unleash-pool"
