@@ -67,7 +67,7 @@ resource "google_cloudfunctions2_function" "event_function" {
   description = "a new function"
 
   build_config {
-    runtime = "python3.8"
+    runtime = "python310"
     entry_point = "persist_data" 
     source {
       storage_source {
