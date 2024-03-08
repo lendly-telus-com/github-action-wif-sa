@@ -1,3 +1,9 @@
+resource "google_service_account" "unleash_sa" {
+  account_id   = "unleash-sa"
+  display_name = "Unleash Service Account"
+  project      = "off-net-dev"
+}
+
 resource "google_storage_bucket" "events_station_local" {
   name                        = "${var.project_id}-events-station-local"
   location                    = var.region
