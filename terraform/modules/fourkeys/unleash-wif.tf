@@ -1,31 +1,5 @@
-resource "google_service_account" "unleash_sa" {
-  account_id   = "unleash-sa"
-  display_name = "Unleash Service Account"
-  project      = "off-net-dev"
-}
-
-resource "google_project_iam_binding" "sa_binding_workload_identity" {
-  project = "off-net-dev"
-  role    = "roles/iam.workloadIdentityUser"
-
-  members = [
-    "serviceAccount:${google_service_account.unleash_sa.email}"
-  ]
-}
-
-resource "google_project_iam_binding" "sa_binding_artifact_registry" {
-  project = "off-net-dev"
-  role    = "roles/artifactregistry.writer"
-
-  members = [
-    "serviceAccount:${google_service_account.unleash_sa.email}"
-  ]
-}
-
-
-## added bindings
 resource "google_iam_workforce_pool" "pool" {
-  workforce_pool_id = "example-pool"
+  workforce_pool_id = "unleash-pool"
   parent            = "organizations/off-net-dev"
   location          = "global"
 }
