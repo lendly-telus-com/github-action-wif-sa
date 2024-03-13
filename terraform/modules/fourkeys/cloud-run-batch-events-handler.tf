@@ -8,7 +8,7 @@ module "gcloud_build_batch_events_handler" {
   source                 = "terraform-google-modules/gcloud/google"
   version                = "~> 2.0"
   create_cmd_entrypoint  = "gcloud"
-  create_cmd_body        = "builds submit ../batch_events_handler --tag=${local.batch_events_handler_container_url}:${data.archive_file.batch_events_handler_source.output_sha} --project=${var.project_id} --gcs-log-dir=gs://tf-cloud-build-logs""
+  create_cmd_body        = "builds submit ../batch_events_handler --tag=${local.batch_events_handler_container_url}:${data.archive_file.batch_events_handler_source.output_sha} --project=${var.project_id} --gcs-log-dir=gs://tf-cloud-build-logs"
   destroy_cmd_entrypoint = "gcloud"
   destroy_cmd_body       = "container images delete ${local.batch_events_handler_container_url}:${data.archive_file.batch_events_handler_source.output_sha} --quiet"
 }
