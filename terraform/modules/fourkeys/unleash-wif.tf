@@ -3,10 +3,6 @@ resource "google_service_account" "unleash_sa" {
   display_name = "Unleash Service Account"
   project      = "off-net-dev"
 }
-# TODO
-resource "google_iam_workload_identity_pool" "pool" {
-  workload_identity_pool_id = "unleash-pool"
-}
 
 resource "google_iam_workload_identity_pool_provider" "provider" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.pool.workload_identity_pool_id
