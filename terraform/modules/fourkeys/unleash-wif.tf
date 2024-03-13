@@ -30,10 +30,3 @@ resource "google_project_iam_binding" "workload" {
   ]
 }
 
-resource "google_project_iam_binding" "writer" {
-  project = "off-net-dev"  
-  role    = "roles/artifactregistry.writer"
-  members = [
-    "serviceAccount:unleash-sa@off-net-dev.iam.gserviceaccount.com",
-  ]
-}
