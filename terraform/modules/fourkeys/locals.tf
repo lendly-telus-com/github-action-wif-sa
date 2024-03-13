@@ -12,5 +12,5 @@ locals {
   gh_logs_bq_writer_container_url    = format("gcr.io/%s/batch_logs", var.project_id) 
   test_artifact_registry_url         = format("${var.region}-docker.pkg.dev/${var.project_id}/gcf-artifacts/%s/logs-by-artifact", var.project_id)  
   reload_gh_log_handler_url          = format("${var.region}-docker.pkg.dev/${var.project_id}/gcf-artifacts/%s/reload_gh_log_handler_url", var.project_id)  
-  batch_events_handler_container_url = format("${var.region}-docker.pkg.dev/${var.project_id}/gcf-artifacts/%s/batch_events_handler_container_url", var.project_id)
+  batch_events_handler_gar_url       = format("${var.region}-docker.pkg.dev/${var.project_id}/gcf-artifacts/%s/batch_events_handler_gar_url", var.project_id)
 }

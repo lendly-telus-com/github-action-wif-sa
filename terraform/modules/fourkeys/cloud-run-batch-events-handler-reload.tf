@@ -8,27 +8,27 @@ module "gcloud_build_batch_events_handler" {
   source                 = "terraform-google-modules/gcloud/google"
   version                = "~> 2.0"
   create_cmd_entrypoint  = "gcloud"
-  create_cmd_body        = "builds submit ../batch_events_handler --tag=${local.batch_events_handler_container_url}:${data.archive_file.batch_events_handler_source.output_sha} --project=${var.project_id} --gcs-log-dir=gs://tf-cloud-build-logs"
+  create_cmd_body        = "builds submit ../batch_events_handler --tag=${local.batch_events_handler_gar_url}:${data.archive_file.batch_events_handler_source.output_sha} --project=${var.project_id} --gcs-log-dir=gs://tf-batch-events-hanlder-logs"
   destroy_cmd_entrypoint = "gcloud"
-  destroy_cmd_body       = "container images delete ${local.batch_events_handler_container_url}:${data.archive_file.batch_events_handler_source.output_sha} --quiet"
+  destroy_cmd_body       = "container images delete ${local.batch_events_handler_gar_url}:${data.archive_file.batch_events_handler_source.output_sha} --quiet"
 }
 
-resource "google_cloud_run_service" "batch_events_handler" {
-  name     = "batch-events-handler"
+resource "google_cloud_run_service" "batch_events_handler_reload" {
+  name     = "batch-events-handler-reload"
   project  = var.project_id
-  location = var.region
+  location = "us-central1"
 
   template {
     metadata {
       annotations = {
-        "client.knative.dev/user-image"        = "${local.batch_events_handler_container_url}:${data.archive_file.batch_events_handler_source.output_sha}"
+        "client.knative.dev/user-image"        = "${local.batch_events_handler_gar_url}:${data.archive_file.batch_events_handler_source.output_sha}"
         "run.googleapis.com/client-name"       = "cloud-console"
         "autoscaling.knative.dev/minScale"     = "1"
       }      
     }
     spec {
       containers {
-        image = "${local.batch_events_handler_container_url}:${data.archive_file.batch_events_handler_source.output_sha}"
+        image = "${local.batch_events_handler_gar_url}:${data.archive_file.batch_events_handler_source.output_sha}"
         env {
           name  = "project-name"
           value = var.project_id
@@ -60,10 +60,4 @@ resource "google_cloud_run_service" "batch_events_handler" {
   }
 }
 
-resource "google_cloud_run_service_iam_member" "unauthenticated_invoker" {
-  service  = google_cloud_run_service.batch_events_handler.name
-  location = google_cloud_run_service.batch_events_handler.location
-  project  = google_cloud_run_service.batch_events_handler.project
-  role     = "roles/run.invoker"
-  member   = "allUsers"
-}
+
