@@ -22,11 +22,5 @@ resource "google_iam_workload_identity_pool_provider" "provider" {
   }
 }
 
-resource "google_project_iam_binding" "workload" {
-  project = "off-net-dev"  
-  role    = "roles/iam.workloadIdentityUser"
-  members = [
-    "serviceAccount:unleash-sa@off-net-dev.iam.gserviceaccount.com",
-  ]
-}
+
 
