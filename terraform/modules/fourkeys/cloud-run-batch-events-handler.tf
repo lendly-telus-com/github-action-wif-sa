@@ -59,13 +59,3 @@ resource "google_cloud_run_service" "batch_events_handler" {
     ]
   }
 }
-
-resource "google_cloud_run_service_iam_binding" "batch_event_handler_noauth" {
-  location   = var.region
-  project    = var.project_id
-  service    = google_cloud_run_service.batch_events_handler.name
-  role       = "roles/run.invoker"
-  members    = ["allUsers"]
-  depends_on = [google_cloud_run_service.batch_events_handler]
-}
-
