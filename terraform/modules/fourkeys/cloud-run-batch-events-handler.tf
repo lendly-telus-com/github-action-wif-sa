@@ -59,3 +59,11 @@ resource "google_cloud_run_service" "batch_events_handler" {
     ]
   }
 }
+
+resource "google_cloud_run_service_iam_member" "unauthenticated_invoker" {
+  service  = google_cloud_run_service.batch_events_handler.name
+  location = google_cloud_run_service.batch_events_handler.location
+  project  = google_cloud_run_service.batch_events_handler.project
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
